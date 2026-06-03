@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mr-robot-crunch"
+version = "1.0.0"
+description = "Combine words into every possible mutation — a parallel, resumable wordlist generator."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "rebazomar" }]
+keywords = ["wordlist", "password", "permutations", "mutation", "security", "mr-robot"]
+dependencies = ["psutil>=5.9"]
+
+[project.urls]
+Homepage = "https://github.com/rebazomar121/mr-robot-crunch"
+
+[project.scripts]
+mr-robot-crunch = "mr_robot_crunch.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mr_robot_crunch"]
