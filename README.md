@@ -1,5 +1,8 @@
 # mr-robot-crunch
 
+<img width="3000" height="1240" alt="mr-robot-crunch-lockup-red" src="https://github.com/user-attachments/assets/ec3e416b-78e7-4f6f-b1c4-4d79722b5e1c" />
+
+
 > Combine words into every possible mutation — a parallel, resumable wordlist generator.
 
 Give it a few words like `text alice carol` and it generates every combination/mutation of
