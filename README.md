@@ -11,6 +11,14 @@ is streamed to disk, so memory stays bounded even when the wordlist is enormous.
   github : https://github.com/rebazomar121/mr-robot-crunch
 ```
 
+## Quick install
+
+```sh
+pipx install git+https://github.com/rebazomar121/mr-robot-crunch.git
+```
+
+Then run `mr-robot-crunch`. (More options under [Install](#install).)
+
 ## Features
 
 - **Full mutation engine** — subsets + orderings → separators → case → leetspeak → prefixes/suffixes.
@@ -52,10 +60,25 @@ is streamed to disk, so memory stays bounded even when the wordlist is enormous.
 
 ## Install
 
+Install straight from GitHub — no checkout needed:
+
+```sh
+pipx install git+https://github.com/rebazomar121/mr-robot-crunch.git
+```
+
+Or from a local copy:
+
 ```sh
 pipx install .
-# or from a checkout for development:
+# or, for development (editable):
 pip install -e .
+```
+
+Upgrade / uninstall later:
+
+```sh
+pipx upgrade mr-robot-crunch
+pipx uninstall mr-robot-crunch
 ```
 
 ## Usage
@@ -98,6 +121,40 @@ or `--exhaustive` (layers) · `--min-len/--max-len/--require-*` (filters) ·
 > per-character casing collapses to whole-string case rules (a note is printed). Everything
 > else — whole-string case, leetspeak, prefixes and suffixes — maps to real `sXY`/`^x`/`$x`
 > rules.
+
+### Example: crack a hash in seconds (with hashcat)
+
+A full end-to-end demo you can run yourself. We make a hash from a password we
+already know (`alice2024`), then let the tool + [hashcat](https://hashcat.net)
+recover it — proving the workflow.
+
+```sh
+# 1. Create a target hash from a known password (this stands in for a captured hash)
+printf '%s' "alice2024" | md5sum | cut -d' ' -f1 > hash.txt   # Linux
+# macOS:  printf '%s' "alice2024" | md5 | awk '{print $NF}' > hash.txt
+
+# 2. Generate guesses with the tool and pipe them straight into hashcat
+mr-robot-crunch run --words "alice" --case whole --leet none --stdout \
+  | hashcat -m 0 -a 0 hash.txt
+```
+
+Output (cracked instantly):
+
+```
+28db548ac69921eca66afe7de34f67f5:alice2024
+Status...........: Cracked
+```
+
+What happened: the tool turned the word `alice` into candidates like `alice`,
+`Alice`, `ALICE`, `alice2024`, `Alice!`… and piped them into hashcat, which
+hashed each guess and found the one matching the target — `alice2024`.
+
+`-m 0` is the hash type (`0` = MD5); change it to match your target (e.g. `1000`
+for NTLM, `1800` for sha512crypt). Run `hashcat --help | grep -i <type>` to find it.
+
+> ⚠️ **Authorized use only.** Password cracking is for systems you own or have
+> explicit written permission to test (pentests, CTFs, your own accounts). Using
+> it on anyone else's data is illegal.
 
 ### Controls during a run
 

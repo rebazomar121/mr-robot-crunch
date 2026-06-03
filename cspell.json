@@ -21,6 +21,10 @@
     "rebazomar",
     "toggleable",
     "charsets",
-    "materialising"
+    "materialising",
+    "NTLM",
+    "pentests",
+    "sha",
+    "crypt"
   ]
 }
