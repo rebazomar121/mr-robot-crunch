@@ -156,6 +156,46 @@ for NTLM, `1800` for sha512crypt). Run `hashcat --help | grep -i <type>` to find
 > explicit written permission to test (pentests, CTFs, your own accounts). Using
 > it on anyone else's data is illegal.
 
+### Figuring out the hash type
+
+hashcat needs the right `-m` mode or it can't crack. To identify an unknown hash:
+
+**Automated tools (easiest):**
+
+```sh
+pip install hashid name-that-hash
+
+hashid -m '28db548ac69921eca66afe7de34f67f5'   # -m shows the hashcat mode
+nth   -t '28db548ac69921eca66afe7de34f67f5'    # name-that-hash: type + -m + John format
+```
+
+**Recognize it by shape** (length / prefix):
+
+| Looks like | Type | hashcat `-m` |
+|---|---|---|
+| 32 hex chars (`28db548a…`) | MD5 | `0` |
+| 32 hex chars (no prefix) | NTLM (Windows) | `1000` |
+| 40 hex chars | SHA-1 | `100` |
+| 64 hex chars | SHA-256 | `1400` |
+| 128 hex chars | SHA-512 | `1700` |
+| starts `$2a$/$2b$/$2y$` | bcrypt | `3200` |
+| starts `$1$` | md5crypt | `500` |
+| starts `$6$` | sha512crypt | `1800` |
+
+**Browse hashcat's own reference:**
+
+```sh
+hashcat --help | grep -i sha256      # find the mode for a known type
+hashcat --example-hashes | less      # a sample of every supported hash format
+```
+
+> Note: you can identify the *likely* format, but not always with certainty — MD5
+> and NTLM are both "32 hex chars" and look identical, so tools list several
+> candidates and you may need to try a couple of `-m` values.
+>
+> `RS256`/`HS256` are JWT **signing** algorithms, not password hashes — different
+> tooling (e.g. `hashcat -m 16500` for JWT), not the table above.
+
 ### Controls during a run
 
 - `P` — pause and choose **[C]ontinue** or **[S]top & save**.

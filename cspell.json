@@ -25,6 +25,10 @@
     "NTLM",
     "pentests",
     "sha",
-    "crypt"
+    "crypt",
+    "bcrypt",
+    "hashid",
+    "sha512crypt",
+    "md5crypt"
   ]
 }
